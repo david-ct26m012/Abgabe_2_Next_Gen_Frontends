@@ -1,16 +1,13 @@
 # QuickNotes – Hausübung 2
 
-**Student:** David Scheucher  
-**Matrikelnummer:** [Hier eintragen]  
-**Lehrveranstaltung:** Next Generation Web Frontends – FH Technikum Wien
-
+**Student:** David Scheucher
 ---
 
 ## Setup-Anleitung
 
 ```bash
 # 1. Repository klonen
-git clone <repo-url>
+git clone https://github.com/david-ct26m012/Abgabe_2_Next_Gen_Frontends.git
 cd KleinesGeruest
 
 # 2. Abhängigkeiten installieren
@@ -20,16 +17,6 @@ npm install
 npm run dev
 ```
 
-Die App läuft dann unter der im Terminal angezeigten Adresse (standardmäßig `http://localhost:5173`).
-
-
-## Technologien
-
-- **Framework:** Vue 3 (Composition API / `<script setup>`)
-- **Sprache:** TypeScript
-- **Build-Tool:** Vite
-
----
 
 ## Struktur und Begründung
 
