@@ -22,7 +22,6 @@ npm run dev
 
 Die App läuft dann unter der im Terminal angezeigten Adresse (standardmäßig `http://localhost:5173`).
 
----
 
 ## Technologien
 
@@ -42,14 +41,14 @@ Die gesamte Notiz-Logik (Liste, Hinzufügen, Löschen, Filtern) liegt in `compos
 
 **1. Warum darf `NoteCard` die Notiz-Prop nicht selbst verändern, und wie löst ihr das stattdessen?**
 
-Props fließen in Vue immer von Eltern- zur Kindkomponente (Ein-Weg-Datenfluss). Würde `NoteCard` die Prop direkt mutieren, hätte das Elternelement (`App.vue`) keine Kenntnis davon, was zu inkonsistentem State führt. Stattdessen sendet `NoteCard` beim Klick auf „Löschen" ein `delete`-Event mit der `id` nach oben. `App.vue` empfängt dieses Event und ruft `deleteNote(id)` aus dem Composable auf – dort passiert die eigentliche Zustandsänderung.
+In Vue fließen Props immer nur von der Eltern- zur Kindkomponente, man darf sie in der Kindkomponente nicht direkt ändern. Das hab ich anfangs nicht ganz verstanden, aber wenn `NoteCard` einfach die Prop überschreiben würde, wüsste `App.vue` nichts davon und der State wäre inkonsistent. Deswegen schickt `NoteCard` beim Klick auf Löschen ein Event mit der `id` nach oben, und `App.vue` ruft dann `deleteNote(id)` auf – die eigentliche Änderung passiert also im Composable, nicht in der Karte selbst.
 
 **2. Was passiert, wenn zwei Komponenten dasselbe `useNotes()` aufrufen – teilen sie sich die Notizen oder nicht?**
 
-Das kommt auf die Implementierung an. In *dieser* App ist `notes` ein Ref, der innerhalb von `useNotes()` durch `useLocalStorage('quicknotes', [])` erzeugt wird. Jeder Aufruf von `useNotes()` erstellt eine neue Instanz dieses Refs – sie teilen sich also *nicht* automatisch dieselbe reaktive Referenz. In dieser App ruft nur `App.vue` `useNotes()` auf und gibt den State per Props/Events weiter, weshalb es kein Problem ist. Soll State global geteilt werden, bräuchte man ein Singleton-Muster (z. B. den Ref außerhalb der Funktion deklarieren oder Pinia verwenden).
+Ich hab das kurz ausprobiert bzw. nachgedacht: Nein, sie teilen sich den State nicht automatisch. Jedes Mal wenn man `useNotes()` aufruft, wird ein neuer Ref erstellt – die beiden Instanzen sind also voneinander unabhängig. In dieser App ist das kein Problem, weil nur `App.vue` das Composable aufruft und alles per Props/Events weitergibt. Wenn man aber wirklich einen globalen State bräuchte, müsste man den Ref außerhalb der Funktion deklarieren oder gleich Pinia verwenden.
 
 **3. Wozu dient das `Note`-Interface, wenn der Code auch ohne liefe?**
 
-Das Interface macht den Datenfluss für den Compiler und für Entwickler sichtbar: Jede Komponente, die eine Notiz als Prop erhält oder emittiert (z. B. `NoteCard` mit `defineProps<{ note: Note }>()`), bekommt eine klare Garantie über die Form des Objekts. Fehler wie ein fehlender `id`-Wert oder ein falscher Typ fallen schon beim Schreiben des Codes auf, nicht erst zur Laufzeit. Ohne Interface würde TypeScript das Objekt als `any` behandeln – alle Typsicherheit geht verloren.
+Ehrlich gesagt hab ich das Interface am Anfang für unnötig gehalten, aber es macht schon Sinn. Ohne Interface behandelt TypeScript das Objekt einfach als `any` und man merkt Fehler erst wenn die App läuft. Mit dem Interface sieht man sofort wenn z.B. die `id` fehlt oder ein falscher Typ übergeben wird – direkt beim Tippen im Editor. Besonders praktisch war das bei `Omit<Note, 'id'>` in `NoteForm`, weil das Formular ja noch keine `id` kennt und TypeScript einen sonst zwingen würde, eine mitzuschicken.
 
 ---
