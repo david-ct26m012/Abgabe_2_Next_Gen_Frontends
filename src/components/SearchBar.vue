@@ -1,13 +1,11 @@
 <script setup>
-defineProps(['modelValue'])
-defineEmits(['update:modelValue'])
+const searchTerm = defineModel()
 </script>
 
 <template>
   <input
     class="search-bar"
-    :value="modelValue"
-    @input="$emit('update:modelValue', $event.target.value)"
+    v-model="searchTerm"
     placeholder="Suchen nach Titel, Text oder Tag ..."
   />
 </template>
